@@ -21,6 +21,8 @@ def movie_post():
     url_receive = request.form['url_give']
     star_receive = request.form['star_give']
     comment_receive = request.form['comment_give']
+    comment_list = list(db.homework2.find({}, {'_id': False}))
+    count = len(comment_list) + 1
 
     headers = {
         'User-Agent': 'Mozilla/5.0 (Windows NT 10.0; Win64; x64)AppleWebKit/537.36 (KHTML, like Gecko) Chrome/73.0.3683.86 Safari/537.36'}
@@ -37,7 +39,8 @@ def movie_post():
         'image':image,
         'desc':desc,
         'star':star_receive,
-        'comment':comment_receive
+        'comment':comment_receive,
+        'num': count
     }
     db.movies.insert_one(doc)
     return jsonify({'msg':'저장 완료!'})
@@ -46,6 +49,13 @@ def movie_post():
 def movie_get():
     movie_list = list(db.movies.find({}, {'_id': False}))
     return jsonify({'movies':movie_list})
+
+@app.route("/movie/delete", methods=["POST"])
+def movie_delete():
+    num_receive = request.form['num_give']
+    db.movies.delete_one({'num': int(num_receive)})
+    return jsonify({'msg':'삭제 완료!'})
+
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
