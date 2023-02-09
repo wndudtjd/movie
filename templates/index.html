@@ -105,6 +105,7 @@
                         let desc = rows[i]['desc']
                         let image = rows[i]['image']
                         let star = rows[i]['star']
+                        let num = rows[i]['num']
 
                         let star_image = '⭐'.repeat(star)
 
@@ -117,6 +118,8 @@
                                                     <p class="card-text">${desc}</p>
                                                     <p>${star_image}</p>
                                                     <p class="mycomment">${comment}</p>
+                                                    <button onclick="delete_comment('${num}')">삭제</button>
+                                                    <button onclick="modify_comment('${num}')">수정</button>
                                                 </div>
                                             </div>
                                         </div>`
@@ -144,6 +147,56 @@
             });
         }
 
+        //삭제기능 버튼 구현!
+        function delete_comment(num) {
+            $.ajax({
+                type: 'POST',
+                url: '/movie/delete',
+                data: {'num_give':num},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
+        // 수정버튼 구현!
+        function modify_comment(num) {
+            $('#post-box').empty()
+            let temp_html = `<div class="input-group mb-3">
+                                <label class="input-group-text" for="inputGroupSelect01">별점</label>
+                                <select class="form-select" id="modify_star">
+                                    <option selected>-- 선택하기 --</option>
+                                    <option value="1">⭐</option>
+                                    <option value="2">⭐⭐</option>
+                                    <option value="3">⭐⭐⭐</option>
+                                    <option value="4">⭐⭐⭐⭐</option>
+                                    <option value="5">⭐⭐⭐⭐⭐</option>
+                                </select>
+                            </div>
+                            <div class="form-floating">
+                                <textarea id="modify_comment" class="form-control" placeholder="Leave a comment here"></textarea>
+                                <label for="floatingTextarea2">코멘트</label>
+                            </div>
+                            <div class="mybtns">
+                                <button onclick="posting_modify(${num})" type="button" class="btn btn-dark">수정하기</button>
+                                <button onclick="close_box()" type="button" class="btn btn-outline-dark">닫기</button>
+                            </div>`
+            $('#post-box').append(temp_html)
+            $('#post-box').show() //수정버튼 눌렀을시 show
+        }
+        function posting_modify(num) {
+            let modify_comment = $('#modify_comment').val()
+            let modify_star = $('#modify_star').val()
+            $.ajax({
+                type: 'POST',
+                url: '/movie/modify',
+                data: {'num_give':num, 'comment_give':modify_comment, 'star_give':modify_star},
+                success: function (response) {
+                    alert(response['msg'])
+                    window.location.reload()
+                }
+            })
+        }
         function open_box() {
             $('#post-box').show()
         }
