@@ -50,12 +50,24 @@ def movie_get():
     movie_list = list(db.movies.find({}, {'_id': False}))
     return jsonify({'movies':movie_list})
 
+#삭제버튼 구현!
 @app.route("/movie/delete", methods=["POST"])
 def movie_delete():
     num_receive = request.form['num_give']
     db.movies.delete_one({'num': int(num_receive)})
     return jsonify({'msg':'삭제 완료!'})
 
+#수정버튼 구현!
+@app.route("/movie/modify", methods=["POST"])
+def movie_modify():
+    num_receive = request.form['num_give']
+    comment_receive = request.form['comment_give']
+    star_receive = request.form['star_give']
+    print(num_receive,comment_receive,star_receive)
+    db.movies.update_one({'num': int(num_receive)}, {'$set': {'comment': comment_receive}})
+    db.movies.update_one({'num': int(num_receive)}, {'$set': {'star': star_receive}})
+
+    return jsonify({'msg':'수정 완료!'})
 
 if __name__ == '__main__':
     app.run('0.0.0.0', port=5000, debug=True)
